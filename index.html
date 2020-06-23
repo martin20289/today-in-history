@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Aguafina+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@500;600&family=Diplomata&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="setup.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>TODAY IN HISTORY</h1>
+        <p class='instruction'>Scroll through historical events that happened on this day from antiquity to recent times or navigate by clicking on the time bar.</p>
+    </header>
+    <main>
+        <div class="scroll">
+            <div class="overlay"><h3>Open Scroll</h3></div>
+            <div class="scroll-body"></div>
+            <img class="left-scroll" src="assets/leftscroll.png" alt="left scroll">
+            <img class="right-scroll" src="assets/rightscroll.png" alt="right scroll">
+            <div class="display"></div>
+            <div class="progress-bar"></div>
+            <div class="time-slider">
+                <div class="ancient hidden"><p>Antiquity</p></div>
+                <div class="medieval hidden"><p>Medieval Times</p></div>
+                <div class="renaissance hidden"><p>Renaissance Period</p></div>
+                <div class="modern hidden"><p>18<sup>th</sup> century - 20<sup>th</sup> century</p></div>
+                <div class="current hidden"><p>Recent News</p></div>
+            </div>
+            <div class="navigation-top hidden"><p id="nav-top">Scroll here</p><span>&#11167;</span></div>
+            <div class="navigation-bottom hidden"><span>&#11165;</span><p id="nav-bot">or navigate here</p></div>
+        </div>
+    </main>
+    <footer>
+        <div class="closing"><p>"Today in History" is updated daily. Check again tomorrow for new contents!</p></div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
