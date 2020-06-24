@@ -7,6 +7,10 @@ body {
 header {
     display: grid;
     justify-content: center;
+    width: 100vw;
+}
+header, main, footer {
+    min-width: 1100px;
 }
 h1 {
     font-size: 65px;
@@ -43,7 +47,6 @@ p {
     background-color: rgba(223, 209, 193);
     background-color: rgba(223, 209, 193, 0.8);
     transform: scaleX(0.0001);
-    transition: transform 1s;
 }
 .content-container {
     display: grid;
@@ -117,9 +120,8 @@ img {
     border-radius: 10px;
     margin: 55vh calc(25vw - 15px);
     cursor: pointer;
-    transform: scaleX(0.0001);
+    transform: scaleX(0);
     font-weight: 600;
-    transition: transform 1s;
 }
 .progress-bar {
     position: absolute;
@@ -141,19 +143,17 @@ img {
     margin: 30vh calc(51vw - 10vh);
     width: 20vh; 
     height: 20vh;
-    min-height: 160px;
-    min-width: 160px;
     overflow: auto;
     border-radius: 50%;
     color: rgb(200, 200, 200);
     background-color: rgb(158, 0, 0); 
     background-color: rgba(158, 0, 0, 0.9);
     cursor: pointer; 
-    transition: all 0.5s;
+    transition: color 0.5s;
 }
 .overlay:hover {
     color: rgb(54, 54, 54);
-    transition: all 0.5s;
+    transition: color 0.5s;
 }
 .navigation-top {
     display: grid;
@@ -173,13 +173,27 @@ img {
     width: 150px;
     margin: 60vh calc(50vw - 75px);
 }
-#nav-top, #nav-bot {
+#nav-top, #nav-bot, #close-button {
     font-family: 'Aguafina Script', cursive;
     color: rgb(175, 0, 0);
+}
+#close-button {
+    font-size: 70px;
 }
 span {
     justify-self: center;
     font-size: 30px;
+}
+.close-button {
+    width: 150px;
+    position: absolute;
+    margin: 62vh 68vw;
+    transition: color 0.5s;
+    cursor: pointer;
+}
+.close-button:hover {
+    color: rgb(54, 54, 54);
+    transition: color 0.5s;
 }
 .closing {
     text-align: center;
@@ -189,6 +203,7 @@ span {
 .revealed {
     color: rgb(54, 54, 54);
     transform: scaleX(1);
+    transition: transform 1s;
 }
 .hidden {
     display: none;
@@ -205,7 +220,12 @@ span {
         margin: 160px calc(25vw - 15px);
     }
     .overlay {
-        margin: 240px calc(51vw - 10vh);
+        margin: 240px calc(51vw - 80px);
+        width: 160px; 
+        height: 160px;
+    }
+    h3 {
+        width: 120px;
     }
     img {
         height: 240px;
