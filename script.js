@@ -158,8 +158,7 @@ helperFunctions.handleMouseScroll = function(element) {
 }
 helperFunctions.fillProgressBar = function(content) {
     let era;
-    try { era = content[helperFunctions.index].childNodes[0].childNodes[0].getAttribute('id'); } 
-    catch(err) {  }
+    try { era = content[helperFunctions.index].childNodes[0].childNodes[0].getAttribute('id'); } catch(err) {  }
     dayInHistory.showEra(era);
     dayInHistory.progressBar.style.width = `${ 50 * helperFunctions.index / content.length }vw`;   
 }
@@ -241,7 +240,7 @@ helperFunctions.close = function() {
         scroll.scrollBody.classList.add('hidden');
         dayInHistory.slider.classList.remove('revealed');
         dayInHistory.display.classList.remove('revealed'); 
-    }, 750);
+    }, 850);
     setTimeout(function() { 
         document.getElementsByClassName('overlay')[0].classList.remove('hidden');
         for (let i = 0; i < 5; i++) { dayInHistory.slider.children[i].classList.add('hidden') }

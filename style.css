@@ -76,11 +76,11 @@ img {
 }
 .left-scroll {
     background-image: linear-gradient(to left, rgb(255, 255, 255, 0), rgb(255, 255, 255, 0), rgb(255, 255, 255, 0), rgb(255, 255, 255, 0), rgb(255, 255, 255), rgba(255, 255, 255), rgba(255, 255, 255), rgba(255, 255, 255));
-    left: -2vw;
+    left: -3vw;
 }
 .right-scroll {
     background-image: linear-gradient(to right, rgb(255, 255, 255, 0), rgb(255, 255, 255, 0), rgb(255, 255, 255, 0), rgb(255, 255, 255, 0), rgba(255, 255, 255), rgba(255, 255, 255), rgba(255, 255, 255), rgba(255, 255, 255));
-    left: 2vw;
+    left: 3vw;
 }
 .close {
     z-index: 1;
@@ -140,7 +140,7 @@ img {
     align-content: center;
     position: absolute;
     z-index: 2;
-    margin: 30vh calc(51vw - 10vh);
+    margin: 30vh calc(50vw - 10vh);
     width: 20vh; 
     height: 20vh;
     overflow: auto;
@@ -220,7 +220,7 @@ span {
         margin: 160px calc(25vw - 15px);
     }
     .overlay {
-        margin: 240px calc(51vw - 80px);
+        margin: 240px calc(50vw - 80px);
         width: 160px; 
         height: 160px;
     }
