@@ -145,10 +145,10 @@ helperFunctions.handleMouseScroll = function(element) {
                 // after scrolling through all contents, start scroll closing process by reversing scroll opening
                 if (!displayContent[helperFunctions.index]) { helperFunctions.close(); } 
                 helperFunctions.fillProgressBar(displayContent);
-                displayContent[helperFunctions.index++].classList.remove('hidden');
+                try { displayContent[helperFunctions.index++].classList.remove('hidden'); } catch(err) {  }
             } else { //scroll up
                 if (displayContent[helperFunctions.index - 1]) { // prevent scrolling past 0
-                    displayContent[helperFunctions.index--].classList.add('hidden');
+                    try { displayContent[helperFunctions.index--].classList.add('hidden'); } catch(err) {  }
                     helperFunctions.fillProgressBar(displayContent);
                     displayContent[helperFunctions.index].classList.remove('hidden'); 
                 }
@@ -157,7 +157,9 @@ helperFunctions.handleMouseScroll = function(element) {
     });
 }
 helperFunctions.fillProgressBar = function(content) {
-    let era = content[helperFunctions.index].childNodes[0].childNodes[0].getAttribute('id');
+    let era;
+    try { era = content[helperFunctions.index].childNodes[0].childNodes[0].getAttribute('id'); } 
+    catch(err) {  }
     dayInHistory.showEra(era);
     dayInHistory.progressBar.style.width = `${ 50 * helperFunctions.index / content.length }vw`;   
 }
