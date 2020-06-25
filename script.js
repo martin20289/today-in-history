@@ -5,6 +5,13 @@ scroll.leftScroll = document.getElementsByClassName('left-scroll')[0];
 scroll.rightScroll = document.getElementsByClassName('right-scroll')[0];
 scroll.scrollBody = document.getElementsByClassName('scroll-body')[0];
 
+const nav = {}
+nav.top = document.getElementsByClassName('navigation-top')[0];
+nav.bottom = document.getElementsByClassName('navigation-bottom')[0];
+// nav.left = document.getElementsByClassName('navigation-left')[0];
+// nav.right = document.getElementsByClassName('navigation-right')[0];
+nav.closeButton = document.getElementsByClassName('close-button')[0];
+
 const dayInHistory = {}
 dayInHistory.host = 'http://history.muffinlabs.com';
 dayInHistory.display = document.getElementsByClassName('display')[0];
@@ -123,6 +130,7 @@ dayInHistory.init = function() {
 helperFunctions = {}
 helperFunctions.initialized = false; // boolean value to initialize functions only once 
 helperFunctions.index = 0; // index of historical events as global variable for access from both scrolling and clicking methods
+helperFunctions.displayContent = dayInHistory.display.childNodes;
 helperFunctions.animateNav = function() { // toggle padding to create animation
     let on = false;
     setInterval(() => {
@@ -136,96 +144,134 @@ helperFunctions.animateNav = function() { // toggle padding to create animation
         on = !on;
     }, 500);
 }
-helperFunctions.handleMouseScroll = function(element) {
-    const displayContent = dayInHistory.display.childNodes;
-    element.addEventListener('wheel', function(e) {
-        if (dayInHistory.display.classList.contains('ready')) {
-            if (e.deltaY > 0) { // scroll down
-                if (displayContent[helperFunctions.index - 1]) { displayContent[helperFunctions.index - 1].classList.add('hidden'); }
-                // after scrolling through all contents, start scroll closing process by reversing scroll opening
-                if (!displayContent[helperFunctions.index]) { helperFunctions.close(); } 
-                helperFunctions.fillProgressBar(displayContent);
-                try { displayContent[helperFunctions.index++].classList.remove('hidden'); } catch(err) {  }
-            } else { //scroll up
-                if (displayContent[helperFunctions.index - 1]) { // prevent scrolling past 0
-                    try { displayContent[helperFunctions.index--].classList.add('hidden'); } catch(err) {  }
-                    helperFunctions.fillProgressBar(displayContent);
-                    displayContent[helperFunctions.index].classList.remove('hidden'); 
-                }
-            }
-        }
-    });
-}
 helperFunctions.fillProgressBar = function(content) {
     let era;
     try { era = content[helperFunctions.index].childNodes[0].childNodes[0].getAttribute('id'); } catch(err) {  }
     dayInHistory.showEra(era);
     dayInHistory.progressBar.style.width = `${ 50 * helperFunctions.index / content.length }vw`;   
 }
-helperFunctions.handleClick = function(element) { 
-    element.addEventListener('click', function(e) {
-        helperFunctions.synchProgressBar(e);
-        helperFunctions.synchDisplayContent();
+helperFunctions.increaseIndex = function() {
+    if (helperFunctions.displayContent[helperFunctions.index - 1]) { 
+        helperFunctions.displayContent[helperFunctions.index - 1].classList.add('hidden'); 
+    }
+    if (!helperFunctions.displayContent[helperFunctions.index]) { 
+        helperFunctions.close(); 
+    } 
+    helperFunctions.fillProgressBar(helperFunctions.displayContent);
+    try { helperFunctions.displayContent[helperFunctions.index++].classList.remove('hidden'); } catch(err) {  }
+}
+helperFunctions.decreaseIndex = function() {
+    if (helperFunctions.displayContent[helperFunctions.index - 1]) { // prevent scrolling past 0
+        try { helperFunctions.displayContent[helperFunctions.index--].classList.add('hidden'); } catch(err) {  }
+        helperFunctions.fillProgressBar(helperFunctions.displayContent);
+        helperFunctions.displayContent[helperFunctions.index].classList.remove('hidden'); 
+    }
+}
+helperFunctions.handleMouseScroll = function(element) {
+    element.addEventListener('wheel', function(e) {
+        if (dayInHistory.display.classList.contains('ready')) {
+            if (e.deltaY > 0) { // scroll down
+                helperFunctions.increaseIndex();
+            } else { //scroll up
+                helperFunctions.decreaseIndex();
+            }
+        }
     });
 }
-helperFunctions.synchProgressBar = function(e) {
-    const displayContent = dayInHistory.display.childNodes;
-    const progressBarLength = 0.5 * window.innerWidth;
-    helperFunctions.index = Math.floor(displayContent.length * (e.clientX - dayInHistory.slider.offsetLeft) / progressBarLength);
-    dayInHistory.progressBar.style.width = `${ 50 * helperFunctions.index / displayContent.length }vw`;
-}
-helperFunctions.synchDisplayContent = function() {
-    const displayContent = dayInHistory.display.childNodes;
-    for (let i = 0; i < displayContent.length; i++) {
-        if (i === helperFunctions.index) {
-            let era = displayContent[helperFunctions.index].childNodes[0].childNodes[0].getAttribute('id');
-            dayInHistory.showEra(era);
-            displayContent[i].classList.remove('hidden');
-        } else {
-            displayContent[i].classList.add('hidden');
+// helperFunctions.handleNav = function(element) {
+//     element.addEventListener('click', function() {
+//         if (element.classList.contains('navigation-right')) { 
+//             helperFunctions.increaseIndex();
+//         } else {
+//             helperFunctions.decreaseIndex();
+//         }
+//     });
+// }
+helperFunctions.handleKeyboard = function() {
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight') {
+            helperFunctions.increaseIndex();
+        } else if (e.key === 'ArrowLeft') {
+            helperFunctions.decreaseIndex();
         }
-    }
+    });
+}
+helperFunctions.handleClick = function(element) { 
+    element.addEventListener('click', function(e) {
+        const progressBarLength = 0.5 * window.innerWidth;
+        helperFunctions.index = Math.floor(helperFunctions.displayContent.length * (e.clientX - dayInHistory.slider.offsetLeft) / progressBarLength);
+        helperFunctions.fillProgressBar(helperFunctions.displayContent);
+        for (let i = 0; i < helperFunctions.displayContent.length; i++) {
+            if (i === helperFunctions.index) {
+                helperFunctions.displayContent[i].classList.remove('hidden');
+            } else {
+                helperFunctions.displayContent[i].classList.add('hidden');
+            }
+        }
+    });
 }
 helperFunctions.handleCloseButton = function() {
     document.getElementsByClassName('close-button')[0].addEventListener('click', function() {
         helperFunctions.close();
     });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            helperFunctions.close();
+        }
+    });
+}
+helperFunctions.handleOpenButton = function() {
+    document.getElementsByClassName('overlay')[0].addEventListener('click', function() {
+        helperFunctions.open();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            helperFunctions.open();
+        }
+    });
 }
 helperFunctions.open = function() {
-    const overlayButton = document.getElementsByClassName('overlay')[0];
-    overlayButton.addEventListener('click', function() { // start scroll opening animation on overlay button being clicked
-        helperFunctions.index = 0;
-        scroll.leftScroll.classList.remove('close');
-        scroll.leftScroll.classList.add('left-open');
-        scroll.rightScroll.classList.remove('close');
-        scroll.rightScroll.classList.add('right-open');
-        scroll.scrollBody.classList.remove('hidden');
-        dayInHistory.slider.classList.add('revealed');
-        dayInHistory.display.classList.add('revealed');
-        overlayButton.classList.add('hidden');
-        setTimeout(function() {
-            document.getElementsByClassName('close-button')[0].classList.remove('hidden');
-            document.getElementsByClassName('navigation-top')[0].classList.remove('hidden');
-            document.getElementsByClassName('navigation-bottom')[0].classList.remove('hidden');
-            dayInHistory.display.childNodes[0].classList.remove('hidden');
-            dayInHistory.display.classList.add('ready');
-            dayInHistory.progressBar.classList.remove('hidden');
-            dayInHistory.progressBar.style.width = 0;
-            dayInHistory.showEra(dayInHistory.display.childNodes[0].childNodes[0].childNodes[0].getAttribute('id'));
-            if (!helperFunctions.initialized) { // only initialize these functions once
-                helperFunctions.initialized = true;
-                helperFunctions.handleMouseScroll(dayInHistory.display);
-                helperFunctions.handleMouseScroll(dayInHistory.slider);
-                helperFunctions.handleMouseScroll(dayInHistory.progressBar);
-                helperFunctions.handleClick(dayInHistory.slider);
-                helperFunctions.handleClick(dayInHistory.progressBar)
-                helperFunctions.animateNav();
-                helperFunctions.handleCloseButton();
-            }
-        }, 1000);
-    });     
+    helperFunctions.index = 0;
+    scroll.leftScroll.classList.remove('close');
+    scroll.leftScroll.classList.add('left-open');
+    scroll.rightScroll.classList.remove('close');
+    scroll.rightScroll.classList.add('right-open');
+    scroll.scrollBody.classList.remove('hidden');
+    dayInHistory.slider.classList.add('revealed');
+    dayInHistory.display.classList.add('revealed');
+    document.getElementsByClassName('overlay')[0].classList.add('hidden');
+    setTimeout(function() {
+        nav.closeButton.classList.remove('hidden');
+        nav.top.classList.remove('hidden');
+        nav.bottom.classList.remove('hidden');
+        // nav.left.classList.remove('hidden');
+        // nav.right.classList.remove('hidden');
+        dayInHistory.display.childNodes[0].classList.remove('hidden');
+        dayInHistory.display.classList.add('ready');
+        dayInHistory.progressBar.classList.remove('hidden');
+        dayInHistory.progressBar.style.width = 0;
+        dayInHistory.showEra(dayInHistory.display.childNodes[0].childNodes[0].childNodes[0].getAttribute('id'));
+        if (!helperFunctions.initialized) { // only initialize these functions once
+            helperFunctions.initialized = true;
+            helperFunctions.handleMouseScroll(dayInHistory.display);
+            helperFunctions.handleMouseScroll(dayInHistory.slider);
+            helperFunctions.handleMouseScroll(dayInHistory.progressBar);
+            helperFunctions.handleClick(dayInHistory.slider);
+            helperFunctions.handleClick(dayInHistory.progressBar)
+            // helperFunctions.handleNav(nav.left);
+            // helperFunctions.handleNav(nav.right);
+            helperFunctions.animateNav();
+            helperFunctions.handleCloseButton();
+            helperFunctions.handleKeyboard();
+        }
+    }, 1000);    
 }
 helperFunctions.close = function() {
+    nav.closeButton.classList.add('hidden');
+    nav.top.classList.add('hidden');
+    nav.bottom.classList.add('hidden');
+    // nav.left.classList.add('hidden');
+    // nav.right.classList.add('hidden');
     scroll.leftScroll.classList.remove('left-open');
     scroll.leftScroll.classList.add('close');
     scroll.rightScroll.classList.remove('right-open');
@@ -233,9 +279,6 @@ helperFunctions.close = function() {
     dayInHistory.progressBar.classList.add('hidden');
     dayInHistory.display.classList.remove('ready');
     document.getElementsByClassName('closing')[0].classList.add('revealed');
-    document.getElementsByClassName('close-button')[0].classList.add('hidden');
-    document.getElementsByClassName('navigation-top')[0].classList.add('hidden');
-    document.getElementsByClassName('navigation-bottom')[0].classList.add('hidden');
     setTimeout(function() {
         scroll.scrollBody.classList.add('hidden');
         dayInHistory.slider.classList.remove('revealed');
@@ -250,7 +293,7 @@ helperFunctions.close = function() {
     }, 1000);
 }
 helperFunctions.init = function() {
-    this.open();
+    this.handleOpenButton();
 }
 
 

@@ -28,6 +28,7 @@ h3 {
     width: 15vh;
     font-size: 40px;
     font-family: 'Cormorant Garamond', serif;
+    transform: rotate(325deg);
 }
 p {
     font-size: 30px;
@@ -39,9 +40,8 @@ p {
 .display {
     position: absolute;
     justify-content: center;    
-    margin: 20vh calc(25vw - 15px);
+    margin: 20vh 25vw;
     height: 30vh;
-    min-height: 240px;
     width: calc(50vw - 30px);
     padding: 15px;
     background-color: rgba(223, 209, 193);
@@ -118,7 +118,7 @@ img {
     background-color: rgba(255, 145, 0);
     background-color: rgba(255, 145, 0, 0.7);
     border-radius: 10px;
-    margin: 55vh calc(25vw - 15px);
+    margin: 55vh 25vw;
     cursor: pointer;
     transform: scaleX(0);
     font-weight: 600;
@@ -131,7 +131,7 @@ img {
     height: 5vh;
     min-height: 40px;
     border-radius: 10px;
-    margin: 55vh calc(25vw - 15px);
+    margin: 55vh 25vw;
     cursor: pointer;
 }
 .overlay {
@@ -180,12 +180,35 @@ img {
 #close-button {
     font-size: 70px;
 }
+/* .navigation-left {
+    position: absolute;
+    margin: calc(35vh - 40px) calc(25vw - 60px);
+    transform: scaleY(1.5) scaleX(0.5);
+}
+.navigation-right {
+    position: absolute;
+    margin: calc(35vh - 40px) calc(75vw + 5px);
+    transform: scaleY(1.5) scaleX(0.5);
+}
+#nav-left, #nav-right {
+    background-color: transparent;
+    border-width: 0;
+    font-size: 70px;
+    color: rgb(175, 0, 0);
+    cursor: pointer;
+    transition: color 0.5s;
+}
+#nav-left:hover, #nav-right:hover {
+    background-color: transparent;
+    border-width: 0;
+    color: rgb(54, 54, 54);
+    transition: color 0.5s;
+} */
 span {
     justify-self: center;
     font-size: 30px;
 }
 .close-button {
-    width: 150px;
     position: absolute;
     margin: 62vh 68vw;
     transition: color 0.5s;
@@ -214,13 +237,14 @@ span {
         margin: 40px 10vw;
     }
     .progress-bar, .time-slider {
-        margin: 440px calc(25vw - 15px);
+        margin: 440px 25vw;
     }
     .display{
-        margin: 160px calc(25vw - 15px);
+        margin: 160px 25vw;
+        height: 240px;
     }
     .overlay {
-        margin: 240px calc(50vw - 80px);
+        margin: 240px 25vw;
         width: 160px; 
         height: 160px;
     }
@@ -239,5 +263,14 @@ span {
     }
     .navigation-bottom {
         margin: 480px calc(50vw - 75px);
+    }
+    .close-button {
+        margin: 496px 68vw;
+    }
+    #nav-left {
+        margin: 280px 25vw;
+    }
+    #nav-right {
+        margin: 280px 75vw;
     }
 }
