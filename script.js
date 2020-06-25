@@ -1,22 +1,22 @@
 const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-
-const scroll = {}
-scroll.leftScroll = document.getElementsByClassName('left-scroll')[0];
-scroll.rightScroll = document.getElementsByClassName('right-scroll')[0];
-scroll.scrollBody = document.getElementsByClassName('scroll-body')[0];
-
-const nav = {}
-nav.top = document.getElementsByClassName('navigation-top')[0];
-nav.bottom = document.getElementsByClassName('navigation-bottom')[0];
-// nav.left = document.getElementsByClassName('navigation-left')[0];
-// nav.right = document.getElementsByClassName('navigation-right')[0];
-nav.closeButton = document.getElementsByClassName('close-button')[0];
+const leftScroll = document.getElementsByClassName('left-scroll')[0];
+const rightScroll = document.getElementsByClassName('right-scroll')[0];
+const scrollBody = document.getElementsByClassName('scroll-body')[0];
+const navTop = document.getElementsByClassName('navigation-top')[0];
+const navBottom = document.getElementsByClassName('navigation-bottom')[0];
+// const navLeft = document.getElementsByClassName('navigation-left')[0];
+// const navRight = document.getElementsByClassName('navigation-right')[0];
+const closeButton = document.getElementsByClassName('close-button')[0];
+const openButton = document.getElementsByClassName('overlay')[0];
+const slider = document.getElementsByClassName('time-slider')[0];
+const progressBar = document.getElementsByClassName('progress-bar')[0];
+const closingMessage = document.getElementsByClassName('closing')[0];
+const display = document.getElementsByClassName('display')[0];
+const displayContent = display.childNodes;
+let imageIndex = 0;
 
 const dayInHistory = {}
 dayInHistory.host = 'http://history.muffinlabs.com';
-dayInHistory.display = document.getElementsByClassName('display')[0];
-dayInHistory.slider = document.getElementsByClassName('time-slider')[0];
-dayInHistory.progressBar = document.getElementsByClassName('progress-bar')[0];
 dayInHistory.getToday = function() {
     const today = new Date();
     let month = today.getMonth() + 1;
@@ -38,10 +38,10 @@ dayInHistory.getEvent = function(events) {
     let random = 0;
     events.forEach(event => {
         const eventDisplay = document.createElement('div');
-        eventDisplay.classList.add('content-container')
+        eventDisplay.classList.add('content-container');
         eventDisplay.innerHTML = this.getImage(event, random).outerHTML + this.getDescription(event).outerHTML;
-        eventDisplay.classList.add('hidden')
-        this.display.appendChild(eventDisplay);
+        eventDisplay.classList.add('hidden');
+        display.appendChild(eventDisplay);
     })
 }
 dayInHistory.getImage = function(event, random) {
@@ -82,7 +82,9 @@ dayInHistory.isWWII = function(text) {
 }
 dayInHistory.getYearNumeral = function(year) { // convert 'BC' to negative
     let yearNumeral = parseInt(year);
-    if (year.includes(' BC')) { yearNumeral = -yearNumeral }
+    if (year.includes(' BC')) { 
+        yearNumeral = -yearNumeral 
+    }
     return yearNumeral;
 }
 dayInHistory.getEra = function(year, text, random) {
@@ -116,10 +118,10 @@ dayInHistory.getEra = function(year, text, random) {
 }
 dayInHistory.showEra = function(era) {
     for (let i = 0; i < 5; i++) {
-        if (this.slider.children[i].classList[0] === era) {
-            this.slider.children[i].classList.remove('hidden');
+        if (slider.children[i].classList[0] === era) {
+            slider.children[i].classList.remove('hidden');
         } else { 
-            this.slider.children[i].classList.add('hidden');
+            slider.children[i].classList.add('hidden');
         }
     }
 }
@@ -129,47 +131,53 @@ dayInHistory.init = function() {
 
 helperFunctions = {}
 helperFunctions.initialized = false; // boolean value to initialize functions only once 
-helperFunctions.index = 0; // index of historical events as global variable for access from both scrolling and clicking methods
-helperFunctions.displayContent = dayInHistory.display.childNodes;
 helperFunctions.animateNav = function() { // toggle padding to create animation
     let on = false;
+    const top = document.getElementById('nav-top');
+    const bot = document.getElementById('nav-bot');
     setInterval(() => {
         if (!on) {
-            document.getElementById('nav-top').style.padding = '5px 0 0 0';
-            document.getElementById('nav-bot').style.padding = '0 5px 0 0';
+            top.style.padding = '5px 0 0 0';
+            bot.style.padding = '0 5px 0 0';
         } else {
-            document.getElementById('nav-top').style.padding = '0';
-            document.getElementById('nav-bot').style.padding = '0';
+            top.style.padding = '0';
+            bot.style.padding = '0';
         }
         on = !on;
     }, 500);
 }
 helperFunctions.fillProgressBar = function(content) {
     let era;
-    try { era = content[helperFunctions.index].childNodes[0].childNodes[0].getAttribute('id'); } catch(err) {  }
+    try { 
+        era = content[imageIndex].childNodes[0].childNodes[0].getAttribute('id'); 
+    } catch(err) {  }
     dayInHistory.showEra(era);
-    dayInHistory.progressBar.style.width = `${ 50 * helperFunctions.index / content.length }vw`;   
+    progressBar.style.width = `${ 50 * imageIndex / content.length }vw`;   
 }
 helperFunctions.increaseIndex = function() {
-    if (helperFunctions.displayContent[helperFunctions.index - 1]) { 
-        helperFunctions.displayContent[helperFunctions.index - 1].classList.add('hidden'); 
+    if (displayContent[imageIndex - 1]) { 
+        displayContent[imageIndex - 1].classList.add('hidden'); 
     }
-    if (!helperFunctions.displayContent[helperFunctions.index]) { 
+    if (!displayContent[imageIndex]) { 
         helperFunctions.close(); 
     } 
-    helperFunctions.fillProgressBar(helperFunctions.displayContent);
-    try { helperFunctions.displayContent[helperFunctions.index++].classList.remove('hidden'); } catch(err) {  }
+    helperFunctions.fillProgressBar(displayContent);
+    try { 
+        displayContent[imageIndex++].classList.remove('hidden'); 
+    } catch(err) {  }
 }
 helperFunctions.decreaseIndex = function() {
-    if (helperFunctions.displayContent[helperFunctions.index - 1]) { // prevent scrolling past 0
-        try { helperFunctions.displayContent[helperFunctions.index--].classList.add('hidden'); } catch(err) {  }
-        helperFunctions.fillProgressBar(helperFunctions.displayContent);
-        helperFunctions.displayContent[helperFunctions.index].classList.remove('hidden'); 
+    if (displayContent[imageIndex - 1]) { // prevent scrolling past 0
+        try { 
+            displayContent[imageIndex--].classList.add('hidden'); 
+        } catch(err) {  }
+        helperFunctions.fillProgressBar(displayContent);
+        displayContent[imageIndex].classList.remove('hidden'); 
     }
 }
 helperFunctions.handleMouseScroll = function(element) {
     element.addEventListener('wheel', function(e) {
-        if (dayInHistory.display.classList.contains('ready')) {
+        if (display.classList.contains('ready')) {
             if (e.deltaY > 0) { // scroll down
                 helperFunctions.increaseIndex();
             } else { //scroll up
@@ -199,13 +207,13 @@ helperFunctions.handleKeyboard = function() {
 helperFunctions.handleClick = function(element) { 
     element.addEventListener('click', function(e) {
         const progressBarLength = 0.5 * window.innerWidth;
-        helperFunctions.index = Math.floor(helperFunctions.displayContent.length * (e.clientX - dayInHistory.slider.offsetLeft) / progressBarLength);
-        helperFunctions.fillProgressBar(helperFunctions.displayContent);
-        for (let i = 0; i < helperFunctions.displayContent.length; i++) {
-            if (i === helperFunctions.index) {
-                helperFunctions.displayContent[i].classList.remove('hidden');
+        imageIndex = Math.floor(displayContent.length * (e.clientX - slider.offsetLeft) / progressBarLength);
+        helperFunctions.fillProgressBar(displayContent);
+        for (let i = 0; i < displayContent.length; i++) {
+            if (i === imageIndex) {
+                displayContent[i].classList.remove('hidden');
             } else {
-                helperFunctions.displayContent[i].classList.add('hidden');
+                displayContent[i].classList.add('hidden');
             }
         }
     });
@@ -231,35 +239,35 @@ helperFunctions.handleOpenButton = function() {
     });
 }
 helperFunctions.open = function() {
-    helperFunctions.index = 0;
-    scroll.leftScroll.classList.remove('close');
-    scroll.leftScroll.classList.add('left-open');
-    scroll.rightScroll.classList.remove('close');
-    scroll.rightScroll.classList.add('right-open');
-    scroll.scrollBody.classList.remove('hidden');
-    dayInHistory.slider.classList.add('revealed');
-    dayInHistory.display.classList.add('revealed');
-    document.getElementsByClassName('overlay')[0].classList.add('hidden');
+    imageIndex = 0;
+    leftScroll.classList.remove('close');
+    leftScroll.classList.add('left-open');
+    rightScroll.classList.remove('close');
+    rightScroll.classList.add('right-open');
+    scrollBody.classList.remove('hidden');
+    slider.classList.add('revealed');
+    display.classList.add('revealed');
+    openButton.classList.add('hidden');
     setTimeout(function() {
-        nav.closeButton.classList.remove('hidden');
-        nav.top.classList.remove('hidden');
-        nav.bottom.classList.remove('hidden');
-        // nav.left.classList.remove('hidden');
-        // nav.right.classList.remove('hidden');
-        dayInHistory.display.childNodes[0].classList.remove('hidden');
-        dayInHistory.display.classList.add('ready');
-        dayInHistory.progressBar.classList.remove('hidden');
-        dayInHistory.progressBar.style.width = 0;
-        dayInHistory.showEra(dayInHistory.display.childNodes[0].childNodes[0].childNodes[0].getAttribute('id'));
+        closeButton.classList.remove('hidden');
+        navTop.classList.remove('hidden');
+        navBottom.classList.remove('hidden');
+        // navLeft.classList.remove('hidden');
+        // navRight.classList.remove('hidden');
+        displayContent[0].classList.remove('hidden');
+        display.classList.add('ready');
+        progressBar.classList.remove('hidden');
+        progressBar.style.width = 0;
+        dayInHistory.showEra(displayContent[0].childNodes[0].childNodes[0].getAttribute('id'));
         if (!helperFunctions.initialized) { // only initialize these functions once
             helperFunctions.initialized = true;
-            helperFunctions.handleMouseScroll(dayInHistory.display);
-            helperFunctions.handleMouseScroll(dayInHistory.slider);
-            helperFunctions.handleMouseScroll(dayInHistory.progressBar);
-            helperFunctions.handleClick(dayInHistory.slider);
-            helperFunctions.handleClick(dayInHistory.progressBar)
-            // helperFunctions.handleNav(nav.left);
-            // helperFunctions.handleNav(nav.right);
+            helperFunctions.handleMouseScroll(display);
+            helperFunctions.handleMouseScroll(slider);
+            helperFunctions.handleMouseScroll(progressBar);
+            helperFunctions.handleClick(slider);
+            helperFunctions.handleClick(progressBar)
+            // helperFunctions.handleNav(navLeft);
+            // helperFunctions.handleNav(navRight);
             helperFunctions.animateNav();
             helperFunctions.handleCloseButton();
             helperFunctions.handleKeyboard();
@@ -267,28 +275,30 @@ helperFunctions.open = function() {
     }, 1000);    
 }
 helperFunctions.close = function() {
-    nav.closeButton.classList.add('hidden');
-    nav.top.classList.add('hidden');
-    nav.bottom.classList.add('hidden');
-    // nav.left.classList.add('hidden');
-    // nav.right.classList.add('hidden');
-    scroll.leftScroll.classList.remove('left-open');
-    scroll.leftScroll.classList.add('close');
-    scroll.rightScroll.classList.remove('right-open');
-    scroll.rightScroll.classList.add('close');
-    dayInHistory.progressBar.classList.add('hidden');
-    dayInHistory.display.classList.remove('ready');
-    document.getElementsByClassName('closing')[0].classList.add('revealed');
+    closeButton.classList.add('hidden');
+    navTop.classList.add('hidden');
+    navBottom.classList.add('hidden');
+    // navLeft.classList.add('hidden');
+    // navRight.classList.add('hidden');
+    leftScroll.classList.remove('left-open');
+    leftScroll.classList.add('close');
+    rightScroll.classList.remove('right-open');
+    rightScroll.classList.add('close');
+    progressBar.classList.add('hidden');
+    display.classList.remove('ready');
+    closingMessage.classList.add('revealed');
     setTimeout(function() {
-        scroll.scrollBody.classList.add('hidden');
-        dayInHistory.slider.classList.remove('revealed');
-        dayInHistory.display.classList.remove('revealed'); 
+        scrollBody.classList.add('hidden');
+        slider.classList.remove('revealed');
+        display.classList.remove('revealed'); 
     }, 850);
     setTimeout(function() { 
-        document.getElementsByClassName('overlay')[0].classList.remove('hidden');
-        for (let i = 0; i < 5; i++) { dayInHistory.slider.children[i].classList.add('hidden') }
-        dayInHistory.display.childNodes.forEach(display => { 
-            if (!display.classList.contains('hidden')) { display.classList.add('hidden'); }
+        openButton.classList.remove('hidden');
+        for (let i = 0; i < 5; i++) { 
+            slider.children[i].classList.add('hidden'); 
+        }
+        displayContent.forEach(event => { 
+            if (!event.classList.contains('hidden')) { event.classList.add('hidden'); }
         });
     }, 1000);
 }
