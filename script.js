@@ -197,53 +197,65 @@ helperFunctions.handleMouseScroll = function(element) {
 // }
 helperFunctions.handleKeyboard = function() {
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'ArrowRight') {
-            helperFunctions.increaseIndex();
-        } else if (e.key === 'ArrowLeft') {
-            helperFunctions.decreaseIndex();
+        if (display.classList.contains('ready')) {
+            if (e.key === 'ArrowRight') {
+                helperFunctions.increaseIndex();
+            } else if (e.key === 'ArrowLeft') {
+                helperFunctions.decreaseIndex();
+            }
         }
     });
 }
 helperFunctions.handleClick = function(element) { 
     element.addEventListener('click', function(e) {
-        const progressBarLength = 0.5 * window.innerWidth;
-        imageIndex = Math.floor(displayContent.length * (e.clientX - slider.offsetLeft) / progressBarLength);
-        helperFunctions.fillProgressBar(displayContent);
-        for (let i = 0; i < displayContent.length; i++) {
-            if (i === imageIndex) {
-                displayContent[i].classList.remove('hidden');
-            } else {
-                displayContent[i].classList.add('hidden');
+        if (display.classList.contains('ready')) {
+            const progressBarLength = 0.5 * window.innerWidth;
+            imageIndex = Math.floor(displayContent.length * (e.clientX - slider.offsetLeft) / progressBarLength);
+            helperFunctions.fillProgressBar(displayContent);
+            for (let i = 0; i < displayContent.length; i++) {
+                if (i === imageIndex) {
+                    displayContent[i].classList.remove('hidden');
+                } else {
+                    displayContent[i].classList.add('hidden');
+                }
             }
         }
     });
 }
 helperFunctions.handleCloseButton = function() {
     document.getElementsByClassName('close-button')[0].addEventListener('click', function() {
-        helperFunctions.close();
+        if (display.classList.contains('ready')) {
+            helperFunctions.close();
+        }
     });
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            helperFunctions.close();
+            if (display.classList.contains('ready')) {
+                helperFunctions.close();
+            }
         }
     });
 }
 helperFunctions.handleOpenButton = function() {
     document.getElementsByClassName('overlay')[0].addEventListener('click', function() {
-        helperFunctions.open();
+        if (!helperFunctions.initialized || (!display.classList.contains('ready') && !display.classList.contains('revealed'))) {
+            helperFunctions.open();
+        }
     });
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
-            helperFunctions.open();
+            if (!helperFunctions.initialized || (!display.classList.contains('ready') && !display.classList.contains('revealed'))) { 
+                helperFunctions.open();
+            }
         }
     });
 }
 helperFunctions.open = function() {
     imageIndex = 0;
-    leftScroll.classList.remove('close');
     leftScroll.classList.add('left-open');
-    rightScroll.classList.remove('close');
     rightScroll.classList.add('right-open');
+    leftScroll.classList.replace('close','left-open');
+    rightScroll.classList.replace('close', 'right-open');
     scrollBody.classList.remove('hidden');
     slider.classList.add('revealed');
     display.classList.add('revealed');
@@ -275,24 +287,20 @@ helperFunctions.open = function() {
     }, 1000);    
 }
 helperFunctions.close = function() {
-    closeButton.classList.add('hidden');
-    navTop.classList.add('hidden');
-    navBottom.classList.add('hidden');
-    // navLeft.classList.add('hidden');
-    // navRight.classList.add('hidden');
-    leftScroll.classList.remove('left-open');
-    leftScroll.classList.add('close');
-    rightScroll.classList.remove('right-open');
-    rightScroll.classList.add('close');
-    progressBar.classList.add('hidden');
+    leftScroll.classList.replace('left-open', 'close');
+    rightScroll.classList.replace('right-open', 'close');
     display.classList.remove('ready');
-    closingMessage.classList.add('revealed');
-    setTimeout(function() {
-        scrollBody.classList.add('hidden');
-        slider.classList.remove('revealed');
-        display.classList.remove('revealed'); 
-    }, 850);
+    closingMessage.classList.add('revealed', 'fly-in');
     setTimeout(function() { 
+        progressBar.classList.add('hidden');
+        closeButton.classList.add('hidden');
+        navTop.classList.add('hidden');
+        navBottom.classList.add('hidden');
+        // navLeft.classList.add('hidden');
+        // navRight.classList.add('hidden');
+        scrollBody.classList.add('hidden');
+        display.classList.remove('revealed');
+        slider.classList.remove('revealed');
         openButton.classList.remove('hidden');
         for (let i = 0; i < 5; i++) { 
             slider.children[i].classList.add('hidden'); 
