@@ -39,6 +39,7 @@ dayInHistory.getEvent = function(events) {
     events.forEach(event => {
         const eventDisplay = document.createElement('div');
         eventDisplay.classList.add('content-container');
+        random = this.randomImageIndex(random);
         eventDisplay.innerHTML = this.getImage(event, random).outerHTML + this.getDescription(event).outerHTML;
         eventDisplay.classList.add('hidden');
         display.appendChild(eventDisplay);
@@ -48,7 +49,6 @@ dayInHistory.getImage = function(event, random) {
     const imageContainer = document.createElement('div');
     const image = document.createElement('img');
     imageContainer.classList.add('image-container');
-    random = this.randomImageIndex(random);
     const era = this.getEra(event.year, event.text, random);
     image.src = era[0];
     image.setAttribute('id', era[1]);
