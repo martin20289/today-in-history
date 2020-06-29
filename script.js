@@ -193,6 +193,8 @@ helperFunctions.animateNav = function() { // toggle padding to create animation
     }, 500);
 }
 helperFunctions.moveCoinPointer = function() {
+    const numOfRotations = 3;
+    coinPointer.style.transform = `rotate(${ imageIndex * 360 * numOfRotations / (displayContent.length - 1) }deg)`;
     coinPointer.style.left = `${ this.calcLeftPos()[0] + this.calcLeftPos()[1] * imageIndex / (displayContent.length - 1) }px`;
     if (this.screenSize.matches) {
         coinPointer.style.left = `${ 120 + this.calcLeftPos()[1] * imageIndex / (displayContent.length - 1) }px`;
