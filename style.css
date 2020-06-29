@@ -142,8 +142,8 @@ img {
     z-index: 1;
 }
 .arrow-body {
-    transform: rotate(180deg) scaleX(100) scaleY(1.5);
-    width: 7.5vh;
+    transform: rotate(180deg) scaleX(2) scaleY(0.1);
+    width: calc(100vw - 30vh);
     height: 7.5vh;
     object-fit: contain;
     cursor: pointer;
@@ -165,7 +165,7 @@ img {
     width: fit-content;
     position: absolute;
     top: 87vh;
-    z-index: -1;
+    cursor: pointer;
     transition: color 0.2s;
 }
 .bottom-marking {
@@ -305,8 +305,11 @@ span {
     .bottom-marking {
         margin: 56px 0 0 0;
     }
-    .arrow-head, .arrow-tail, .arrow-body {
+    .arrow-head, .arrow-tail {
         width: 60px;
+        height: 60px;
+    }
+    .arrow-body {
         height: 60px;
     }
     .arrow-head {

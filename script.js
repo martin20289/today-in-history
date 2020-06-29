@@ -136,7 +136,7 @@ dayInHistory.getYearMarkings = function(year, index, numOfEvents, onTop) {
         marking.innerHTML = `<span>&#11165;</span><p style="font-size:20px">${ year }</p>`;
         marking.classList.add('bottom-marking');
     }
-    marking.style.left = `calc(15vh + (100vw - 34vh)*${ index / (numOfEvents - 1) })`;
+    marking.style.left = `${ helperFunctions.calcLeftPos()[0] + helperFunctions.calcLeftPos()[1] * index / (numOfEvents - 1) }px`;
     marking.setAttribute('id', index);
     document.getElementsByTagName('footer')[0].appendChild(marking);
 }
@@ -147,21 +147,27 @@ dayInHistory.init = function() {
 helperFunctions = {}
 helperFunctions.initialized = false; // boolean value to initialize functions only once 
 helperFunctions.screenSize = window.matchMedia(`(max-height: 800px)`);
+helperFunctions.calcLeftPos = function() {
+    const offset = 0.15 * window.innerHeight;
+    let totalLength = window.innerWidth - 0.34 * window.innerHeight;
+    if (this.screenSize.matches) {
+        totalLength = window.innerWidth - 272;
+    }
+    return [offset, totalLength];
+}
 helperFunctions.reposMarkings = function() {
-    window.addEventListener('resize', function() {
-        helperFunctions.moveCoinPointer();
-        if (helperFunctions.screenSize.matches) {
-            for(let i = 0; i < yearMarkings.length; i++) {
-                const index = parseInt(yearMarkings[i].getAttribute('id'));
-                yearMarkings[i].style.left = `calc(120px + (100vw - 272px)*${ index / (displayContent.length - 1) })`;
-            }
-        } else {
-            for(let i = 0; i < yearMarkings.length; i++) {
-                const index = parseInt(yearMarkings[i].getAttribute('id'));
-                yearMarkings[i].style.left = `calc(15vh + (100vw - 34vh)*${ index / (displayContent.length - 1) })`;
-            }
+    helperFunctions.moveCoinPointer();
+    if (helperFunctions.screenSize.matches) {
+        for(let i = 0; i < yearMarkings.length; i++) {
+            const index = parseInt(yearMarkings[i].getAttribute('id'));
+            yearMarkings[i].style.left = `${ 120 + this.calcLeftPos()[1] * index / (displayContent.length - 1) }px`;
         }
-    }); 
+    } else {
+        for(let i = 0; i < yearMarkings.length; i++) {
+            const index = parseInt(yearMarkings[i].getAttribute('id'));
+            yearMarkings[i].style.left = `${ this.calcLeftPos()[0] + this.calcLeftPos()[1] * index / (displayContent.length - 1) }px`;
+        }
+    }
 }
 helperFunctions.animateNav = function() { // toggle padding to create animation
     let on = false;
@@ -171,8 +177,7 @@ helperFunctions.animateNav = function() { // toggle padding to create animation
         if (!on) {
             buttonDescription.style.padding = '0 5px 0 0';
             for (let i = 0; i < yearMarkings.length; i++) {
-                const id = parseInt(yearMarkings[i].getAttribute('id'));
-                if (id === imageIndex || id === imageIndex + 1 || id === imageIndex - 1) {
+                if (coinPointer.style.left === yearMarkings[i].style.left) {
                     yearPointers[i].classList.add('highlight');
                 }   
             }
@@ -188,9 +193,9 @@ helperFunctions.animateNav = function() { // toggle padding to create animation
     }, 500);
 }
 helperFunctions.moveCoinPointer = function() {
-    coinPointer.style.left = `calc(15vh + (100vw - 34vh)*${ imageIndex / (displayContent.length - 1) })`;
+    coinPointer.style.left = `${ this.calcLeftPos()[0] + this.calcLeftPos()[1] * imageIndex / (displayContent.length - 1) }px`;
     if (this.screenSize.matches) {
-        coinPointer.style.left = `calc(120px + (100vw - 272px)*${ imageIndex / (displayContent.length - 1) })`;
+        coinPointer.style.left = `${ 120 + this.calcLeftPos()[1] * imageIndex / (displayContent.length - 1) }px`;
     }
 }
 helperFunctions.increaseIndex = function() {
@@ -213,6 +218,14 @@ helperFunctions.decreaseIndex = function() {
         } catch(err) {  }
         helperFunctions.moveCoinPointer();
         displayContent[imageIndex].classList.remove('hidden'); 
+    }
+}
+helperFunctions.handleScreenResize = function() {
+    window.addEventListener('resize', function() {
+        helperFunctions.reposMarkings();
+    });
+    if (this.initialized) {
+        helperFunctions.reposMarkings();
     }
 }
 helperFunctions.handleMouseScroll = function(element) {
@@ -260,11 +273,13 @@ helperFunctions.handleYearMarkings = function() {
     if (display.classList.contains('ready')) {
         for(let i = 0; i < yearMarkings.length; i++) {
             yearMarkings[i].addEventListener('click', function() {
-                for (let i = 0; i < displayContent.length; i++) {
-                    if (i === parseInt(yearMarkings[i].getAttribute('id'))) {
-                        displayContent[i].classList.remove('hidden');
+                for (let j = 0; j < displayContent.length; j++) {
+                    if (j === parseInt(yearMarkings[i].getAttribute('id'))) {
+                        displayContent[j].classList.remove('hidden');
+                        imageIndex = j;
+                        helperFunctions.moveCoinPointer();
                     } else {
-                        displayContent[i].classList.add('hidden');
+                        displayContent[j].classList.add('hidden');
                     }
                 }
             });  
@@ -311,19 +326,23 @@ helperFunctions.open = function() {
     openButton.classList.add('hidden');
     closing.classList.add('hidden');
     for(let i = 0; i < yearMarkings.length; i++) {
-        yearMarkings[i].classList.add('fade-in');
+        yearMarkings[i].classList.remove('hidden');
     }
     setTimeout(function() {
         closeButton.classList.remove('hidden');
         displayContent[0].classList.remove('hidden');
         display.classList.add('ready');
+        for(let i = 0; i < yearMarkings.length; i++) {
+            yearMarkings[i].classList.add('fade-in');
+        }
         if (!helperFunctions.initialized) { // only initialize these functions once
             helperFunctions.initialized = true;
             helperFunctions.handleMouseScroll(footer);
             helperFunctions.handleClick(arrow.children[1]);
+            helperFunctions.handleYearMarkings();
             helperFunctions.handleKeyboard();
             helperFunctions.handleCloseButton();
-            helperFunctions.reposMarkings();
+            helperFunctions.handleScreenResize();
             helperFunctions.animateNav();
         }
     }, 1000);    
@@ -337,7 +356,7 @@ helperFunctions.close = function() {
     closing.classList.remove('hidden');
     closing.classList.add('fade-in');
     for(let i = 0; i < yearMarkings.length; i++) {
-        yearMarkings[i].classList.remove('fade-in');
+        yearMarkings[i].classList.replace('fade-in', 'hidden');
     }
     setTimeout(function() { 
         closeButton.classList.add('hidden');
@@ -384,7 +403,6 @@ helperFunctions.init = function() {
 if (document.readyState === "complete") {
     dayInHistory.init();
     helperFunctions.init();
-    
 } else {
     document.addEventListener("DOMContentLoaded", function() {
         dayInHistory.init();
