@@ -4,40 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Today In History</title>
+    <!--FONTS-->
     <link href="https://fonts.googleapis.com/css2?family=Aguafina+Script&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@500;600&family=Diplomata&display=swap" rel="stylesheet">
+    <!--STYLESHEETS-->
     <link rel="stylesheet" href="setup.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>TODAY IN HISTORY</h1>
-        <p class='instruction'>Scroll through historical events that happened on this day from antiquity to recent times or navigate by clicking on the time bar.</p>
+        <h1 class='title'>TODAY IN HISTORY</h1>
+        <p class='instruction'>Discover historical events that happened on this day from antiquity to recent times.</p>
     </header>
     <main>
         <div class="scroll">
             <div class="overlay"><h3>Open Scroll</h3></div>
-            <div class="scroll-body hidden"></div>
             <img class="left-scroll" src="assets/leftscroll.png" alt="left scroll">
+            <div class="scroll-body hidden" alt="scroll"></div>
             <img class="right-scroll" src="assets/rightscroll.png" alt="right scroll">
+            <!--DISPLAY HISTORICAL EVENT ONE BY ONE HERE-->
             <div class="display"></div>
-            <div class="progress-bar"></div>
-            <div class="time-slider">
-                <div class="ancient hidden"><p>Antiquity</p></div>
-                <div class="medieval hidden"><p>Medieval Times</p></div>
-                <div class="renaissance hidden"><p>Renaissance Period</p></div>
-                <div class="modern hidden"><p>18<sup>th</sup> century - 20<sup>th</sup> century</p></div>
-                <div class="current hidden"><p>Recent News</p></div>
-            </div>
-            <div class="navigation-top hidden"><p id="nav-top">Scroll here</p><span>&#11167;</span></div>
-            <div class="navigation-bottom hidden"><span>&#11165;</span><p id="nav-bot">or navigate here</p></div>
-            <!-- <div class="navigation-left hidden"><button id="nav-left">&#11164;</button></div>
-            <div class="navigation-right hidden"><button id="nav-right">&#11166;</button></div> -->
-            <div class="close-button hidden"><p id="close-button">&#215;</p></div>
+            <div class="close-button hidden"><p id="button-description">close scroll</p><p id="close-button">X</p></div>
         </div>
     </main>
     <footer>
-        <div class="closing"><p>"Today in History" is updated daily. Visit again tomorrow for new contents!</p></div>
+        <div class="arrow">
+            <img class="arrow-tail" src="assets/arrowtail.png" alt="arrow tail">
+            <img class="arrow-body" src="assets/arrowbody.png" alt="arrow body">
+            <img class="arrow-head" src="assets/arrowhead.png" alt="arrow head">
+        </div>
+        <div class="coin">
+            <img src="assets/coin.png" alt="pointer">
+        </div>
+        <!--DISPLAY TIME MARKINGS HERE-->
+        <div class="closing hidden">
+            <p>"Today in History" is updated daily.</p>
+            <p></p>
+            <p>Visit again tomorrow for more contents.</p>
+        </div>
     </footer>
     <script src="script.js"></script>
 </body>

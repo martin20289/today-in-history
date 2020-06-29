@@ -2,17 +2,16 @@ const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
 const leftScroll = document.getElementsByClassName('left-scroll')[0];
 const rightScroll = document.getElementsByClassName('right-scroll')[0];
 const scrollBody = document.getElementsByClassName('scroll-body')[0];
-const navTop = document.getElementsByClassName('navigation-top')[0];
-const navBottom = document.getElementsByClassName('navigation-bottom')[0];
-// const navLeft = document.getElementsByClassName('navigation-left')[0];
-// const navRight = document.getElementsByClassName('navigation-right')[0];
 const closeButton = document.getElementsByClassName('close-button')[0];
 const openButton = document.getElementsByClassName('overlay')[0];
-const slider = document.getElementsByClassName('time-slider')[0];
-const progressBar = document.getElementsByClassName('progress-bar')[0];
-const closingMessage = document.getElementsByClassName('closing')[0];
+const coinPointer = document.getElementsByClassName('coin')[0];
+const arrow = document.getElementsByClassName('arrow')[0];
+const yearMarkings = document.getElementsByClassName('marking');
+const footer = document.getElementsByTagName('footer')[0];
+const closing = document.getElementsByClassName('closing')[0];
 const display = document.getElementsByClassName('display')[0];
 const displayContent = display.childNodes;
+const numOfMarkings = 9;
 let imageIndex = 0;
 
 const dayInHistory = {}
@@ -36,6 +35,10 @@ dayInHistory.getHistory = async function() {
 }
 dayInHistory.getEvent = function(events) {
     let random = 0;
+    let index = 0;
+    let onTop = true;
+    const mid = Math.floor(events.length / 2);
+    const step = Math.floor(events.length / numOfMarkings);
     events.forEach(event => {
         const eventDisplay = document.createElement('div');
         eventDisplay.classList.add('content-container');
@@ -43,7 +46,12 @@ dayInHistory.getEvent = function(events) {
         eventDisplay.innerHTML = this.getImage(event, random).outerHTML + this.getDescription(event).outerHTML;
         eventDisplay.classList.add('hidden');
         display.appendChild(eventDisplay);
-    })
+        if(this.isMarking(mid, step, index)) {
+            this.getYearMarkings(event.year, index, events.length, onTop);
+            onTop = !onTop;
+        }
+        index++;
+    });
 }
 dayInHistory.getImage = function(event, random) {
     const imageContainer = document.createElement('div');
@@ -116,14 +124,21 @@ dayInHistory.getEra = function(year, text, random) {
     }
     return [src, keyword];
 }
-dayInHistory.showEra = function(era) {
-    for (let i = 0; i < 5; i++) {
-        if (slider.children[i].classList[0] === era) {
-            slider.children[i].classList.remove('hidden');
-        } else { 
-            slider.children[i].classList.add('hidden');
-        }
+dayInHistory.isMarking = function(mid, step, index) {
+    return Math.abs(index - mid) % step === 0;
+}
+dayInHistory.getYearMarkings = function(year, index, numOfEvents, onTop) {
+    const marking = document.createElement('div'); 
+    marking.classList.add('marking');
+    if (onTop) {
+        marking.innerHTML = `<p style="font-size:20px">${ year }</p><span>&#11167;</span>`;
+    } else {
+        marking.innerHTML = `<span>&#11165;</span><p style="font-size:20px">${ year }</p>`;
+        marking.classList.add('bottom-marking');
     }
+    marking.style.left = `calc(15vh + (100vw - 34vh)*${ index / (numOfEvents - 1) })`;
+    marking.setAttribute('id', index);
+    document.getElementsByTagName('footer')[0].appendChild(marking);
 }
 dayInHistory.init = function() {
     this.getHistory();
@@ -131,28 +146,52 @@ dayInHistory.init = function() {
 
 helperFunctions = {}
 helperFunctions.initialized = false; // boolean value to initialize functions only once 
+helperFunctions.screenSize = window.matchMedia(`(max-height: 800px)`);
+helperFunctions.reposMarkings = function() {
+    window.addEventListener('resize', function() {
+        helperFunctions.moveCoinPointer();
+        if (helperFunctions.screenSize.matches) {
+            for(let i = 0; i < yearMarkings.length; i++) {
+                const index = parseInt(yearMarkings[i].getAttribute('id'));
+                yearMarkings[i].style.left = `calc(120px + (100vw - 272px)*${ index / (displayContent.length - 1) })`;
+            }
+        } else {
+            for(let i = 0; i < yearMarkings.length; i++) {
+                const index = parseInt(yearMarkings[i].getAttribute('id'));
+                yearMarkings[i].style.left = `calc(15vh + (100vw - 34vh)*${ index / (displayContent.length - 1) })`;
+            }
+        }
+    }); 
+}
 helperFunctions.animateNav = function() { // toggle padding to create animation
     let on = false;
-    const top = document.getElementById('nav-top');
-    const bot = document.getElementById('nav-bot');
+    const buttonDescription = document.getElementById('button-description');
+    const yearPointers = document.getElementsByTagName('span');
     setInterval(() => {
         if (!on) {
-            top.style.padding = '5px 0 0 0';
-            bot.style.padding = '0 5px 0 0';
+            buttonDescription.style.padding = '0 5px 0 0';
+            for (let i = 0; i < yearMarkings.length; i++) {
+                const id = parseInt(yearMarkings[i].getAttribute('id'));
+                if (id === imageIndex || id === imageIndex + 1 || id === imageIndex - 1) {
+                    yearPointers[i].classList.add('highlight');
+                }   
+            }
         } else {
-            top.style.padding = '0';
-            bot.style.padding = '0';
+            buttonDescription.style.padding = '0';
+            for (let i = 0; i < yearPointers.length; i++) {
+                if (yearPointers[i].classList.contains('highlight')) {
+                    yearPointers[i].classList.remove('highlight');
+                }  
+            }
         }
         on = !on;
     }, 500);
 }
-helperFunctions.fillProgressBar = function(content) {
-    let era;
-    try { 
-        era = content[imageIndex].childNodes[0].childNodes[0].getAttribute('id'); 
-    } catch(err) {  }
-    dayInHistory.showEra(era);
-    progressBar.style.width = `${ 50 * imageIndex / content.length }vw`;   
+helperFunctions.moveCoinPointer = function() {
+    coinPointer.style.left = `calc(15vh + (100vw - 34vh)*${ imageIndex / (displayContent.length - 1) })`;
+    if (this.screenSize.matches) {
+        coinPointer.style.left = `calc(120px + (100vw - 272px)*${ imageIndex / (displayContent.length - 1) })`;
+    }
 }
 helperFunctions.increaseIndex = function() {
     if (displayContent[imageIndex - 1]) { 
@@ -160,18 +199,19 @@ helperFunctions.increaseIndex = function() {
     }
     if (!displayContent[imageIndex]) { 
         helperFunctions.close(); 
-    } 
-    helperFunctions.fillProgressBar(displayContent);
-    try { 
-        displayContent[imageIndex++].classList.remove('hidden'); 
-    } catch(err) {  }
+    } else {
+        try { 
+            helperFunctions.moveCoinPointer(); 
+            displayContent[imageIndex++].classList.remove('hidden'); 
+        } catch(err) {  }
+    }  
 }
 helperFunctions.decreaseIndex = function() {
     if (displayContent[imageIndex - 1]) { // prevent scrolling past 0
         try { 
             displayContent[imageIndex--].classList.add('hidden'); 
         } catch(err) {  }
-        helperFunctions.fillProgressBar(displayContent);
+        helperFunctions.moveCoinPointer();
         displayContent[imageIndex].classList.remove('hidden'); 
     }
 }
@@ -186,21 +226,12 @@ helperFunctions.handleMouseScroll = function(element) {
         }
     });
 }
-// helperFunctions.handleNav = function(element) {
-//     element.addEventListener('click', function() {
-//         if (element.classList.contains('navigation-right')) { 
-//             helperFunctions.increaseIndex();
-//         } else {
-//             helperFunctions.decreaseIndex();
-//         }
-//     });
-// }
 helperFunctions.handleKeyboard = function() {
     document.addEventListener('keydown', function(e) {
         if (display.classList.contains('ready')) {
-            if (e.key === 'ArrowRight') {
+            if (e.key === 'ArrowRight' || e.key === "ArrowUp") {
                 helperFunctions.increaseIndex();
-            } else if (e.key === 'ArrowLeft') {
+            } else if (e.key === 'ArrowLeft' || e.key === "ArrowDown") {
                 helperFunctions.decreaseIndex();
             }
         }
@@ -209,9 +240,12 @@ helperFunctions.handleKeyboard = function() {
 helperFunctions.handleClick = function(element) { 
     element.addEventListener('click', function(e) {
         if (display.classList.contains('ready')) {
-            const progressBarLength = 0.5 * window.innerWidth;
-            imageIndex = Math.floor(displayContent.length * (e.clientX - slider.offsetLeft) / progressBarLength);
-            helperFunctions.fillProgressBar(displayContent);
+            let arrowLength = window.innerWidth - 0.3 * window.innerHeight;
+            if (helperFunctions.screenSize.matches) {
+                arrowLength = window.innerWidth - 0.3 * 800;
+            }
+            imageIndex = Math.floor(displayContent.length * (e.clientX - element.offsetLeft) / arrowLength);
+            helperFunctions.moveCoinPointer();
             for (let i = 0; i < displayContent.length; i++) {
                 if (i === imageIndex) {
                     displayContent[i].classList.remove('hidden');
@@ -222,8 +256,23 @@ helperFunctions.handleClick = function(element) {
         }
     });
 }
+helperFunctions.handleYearMarkings = function() {
+    if (display.classList.contains('ready')) {
+        for(let i = 0; i < yearMarkings.length; i++) {
+            yearMarkings[i].addEventListener('click', function() {
+                for (let i = 0; i < displayContent.length; i++) {
+                    if (i === parseInt(yearMarkings[i].getAttribute('id'))) {
+                        displayContent[i].classList.remove('hidden');
+                    } else {
+                        displayContent[i].classList.add('hidden');
+                    }
+                }
+            });  
+        } 
+    }
+}
 helperFunctions.handleCloseButton = function() {
-    document.getElementsByClassName('close-button')[0].addEventListener('click', function() {
+    document.getElementById('close-button').addEventListener('click', function() {
         if (display.classList.contains('ready')) {
             helperFunctions.close();
         }
@@ -252,59 +301,49 @@ helperFunctions.handleOpenButton = function() {
 }
 helperFunctions.open = function() {
     imageIndex = 0;
+    this.moveCoinPointer();
     leftScroll.classList.add('left-open');
     rightScroll.classList.add('right-open');
     leftScroll.classList.replace('close','left-open');
     rightScroll.classList.replace('close', 'right-open');
     scrollBody.classList.remove('hidden');
-    slider.classList.add('revealed');
     display.classList.add('revealed');
     openButton.classList.add('hidden');
+    closing.classList.add('hidden');
+    for(let i = 0; i < yearMarkings.length; i++) {
+        yearMarkings[i].classList.add('fade-in');
+    }
     setTimeout(function() {
         closeButton.classList.remove('hidden');
-        navTop.classList.remove('hidden');
-        navBottom.classList.remove('hidden');
-        // navLeft.classList.remove('hidden');
-        // navRight.classList.remove('hidden');
         displayContent[0].classList.remove('hidden');
         display.classList.add('ready');
-        progressBar.classList.remove('hidden');
-        progressBar.style.width = 0;
-        dayInHistory.showEra(displayContent[0].childNodes[0].childNodes[0].getAttribute('id'));
         if (!helperFunctions.initialized) { // only initialize these functions once
             helperFunctions.initialized = true;
-            helperFunctions.handleMouseScroll(display);
-            helperFunctions.handleMouseScroll(slider);
-            helperFunctions.handleMouseScroll(progressBar);
-            helperFunctions.handleClick(slider);
-            helperFunctions.handleClick(progressBar)
-            // helperFunctions.handleNav(navLeft);
-            // helperFunctions.handleNav(navRight);
-            helperFunctions.animateNav();
-            helperFunctions.handleCloseButton();
+            helperFunctions.handleMouseScroll(footer);
+            helperFunctions.handleClick(arrow.children[1]);
             helperFunctions.handleKeyboard();
+            helperFunctions.handleCloseButton();
+            helperFunctions.reposMarkings();
+            helperFunctions.animateNav();
         }
     }, 1000);    
 }
 helperFunctions.close = function() {
+    imageIndex = 0;
+    this.moveCoinPointer();
     leftScroll.classList.replace('left-open', 'close');
     rightScroll.classList.replace('right-open', 'close');
     display.classList.remove('ready');
-    closingMessage.classList.add('revealed', 'fly-in');
+    closing.classList.remove('hidden');
+    closing.classList.add('fade-in');
+    for(let i = 0; i < yearMarkings.length; i++) {
+        yearMarkings[i].classList.remove('fade-in');
+    }
     setTimeout(function() { 
-        progressBar.classList.add('hidden');
         closeButton.classList.add('hidden');
-        navTop.classList.add('hidden');
-        navBottom.classList.add('hidden');
-        // navLeft.classList.add('hidden');
-        // navRight.classList.add('hidden');
         scrollBody.classList.add('hidden');
         display.classList.remove('revealed');
-        slider.classList.remove('revealed');
         openButton.classList.remove('hidden');
-        for (let i = 0; i < 5; i++) { 
-            slider.children[i].classList.add('hidden'); 
-        }
         displayContent.forEach(event => { 
             if (!event.classList.contains('hidden')) { event.classList.add('hidden'); }
         });
@@ -314,15 +353,42 @@ helperFunctions.init = function() {
     this.handleOpenButton();
 }
 
+// mobileFunctions = {}
+// mobileFunctions.mediaQuery = function(screenSize) {
+//     return window.matchMedia(`(max-width: ${ screenSize }px)`);
+// }
+// mobileFunctions.interpolate = function(x1, x2, y1, y2, x) {
+//     return y1 + ((y2 - y1) * (x - x1) / (x2 - x1));
+// }
+// mobileFunctions.handleScreenSize = function(mediaQuery) {
+//     if (mediaQuery.matches) {
+//         window.onresize = function() {
+//             if (screen.width > 1024) {
+//                 scrollBody.style.transform = `rotate(90deg) translateY(${ mobileFunctions.interpolate(1200, 250, 0, 20, window.innerWidth) }vw)`;    
+//             } else {
+//                 scrollBody.style.transform = `rotate(90deg) translateY(${ mobileFunctions.interpolate(1200, 250, 25, 20, screen.width) }vw)`;
+//             }
+//         }
+//     } else {
+//         window.onresize = function() {
+//             scrollBody.style.transform = '';
+//         }
+//     }
+// }
+// mobileFunctions.init = function() {
+//     this.handleScreenSize(this.mediaQuery(1200));
+//     this.mediaQuery(1200).addListener(this.handleScreenSize);
+// }
+
 
 if (document.readyState === "complete") {
-    helperFunctions.init();
     dayInHistory.init();
-}
-else {
+    helperFunctions.init();
+    
+} else {
     document.addEventListener("DOMContentLoaded", function() {
-        helperFunctions.init();
         dayInHistory.init();
+        helperFunctions.init();
     });
 }
 

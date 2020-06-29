@@ -1,16 +1,31 @@
 body {
-    display: grid;
-    grid-template-rows: 10vh 80vh 10vh;
-    grid-gap: 20px;
     overflow: hidden;
+    display: grid;
+    grid-template-rows: 12vh 75vh 13vh;
 }
 header {
-    display: grid;
+    grid-template-rows: 6fr 1fr 3fr 1fr;
+    grid-template-areas:
+    'title'
+    '.'
+    'instruction'
+    '.';
     justify-content: center;
     width: 100vw;
 }
-header, main, footer {
-    min-width: 1100px;
+main {
+    display: grid;
+}
+header, footer {
+    display: grid;
+    align-content: center;
+}
+.title {
+    grid-area: title;
+    z-index: 2;
+}
+.instruction {
+    grid-area: instruction;
 }
 h1 {
     font-size: 65px;
@@ -51,10 +66,17 @@ p {
 .content-container {
     display: grid;
     grid-template-columns: 30vh 1fr;
+    grid-template-areas: 'image text';
     grid-gap: 20px;
-    justify-content: center;
+}
+.text-container {
+    grid-area: text;
+    height: 30vh;
+    min-height: 240px;
+    overflow: auto;
 }
 .image-container {
+    grid-area: image;
     display: grid;
     justify-content: center;
 }
@@ -65,14 +87,23 @@ img {
 }
 .scroll {
     display: grid;
+    justify-content: center;
 }
 .left-scroll, .right-scroll {
     position: absolute;
     width: 100%;
-    height: 80vh;
-    min-height: 640px;
+    height: 70vh;
     object-fit: contain;
     transition: transform 1s ease-out;
+}
+.scroll-body {
+    margin: 5vh 10vw;
+    width: 80vw;
+    height: 65vh;
+    background-image: url('assets/scroll.png');
+    background-position: center;
+    background-size: contain;
+    transition: transform 1s;
 }
 .left-scroll {
     background-image: linear-gradient(to left, rgb(255, 255, 255, 0), rgb(255, 255, 255, 0), rgb(255, 255, 255, 0), rgb(255, 255, 255, 0), rgb(255, 255, 255), rgba(255, 255, 255), rgba(255, 255, 255), rgba(255, 255, 255));
@@ -91,48 +122,54 @@ img {
 .right-open {
     transform: translateX(35%);
 }
-.scroll-body {
-    margin: 5vh 10vw;
-    width: 80vw;
-    height: 70vh;
-    min-width: 1000px;
-    min-height: 560px;
-    background-image: url('assets/scroll.png');
-    background-position: center;
-    background-size: contain;
-    transition: transform 1s;
-}
-.content-container {
-    height: 30vh;
-    min-height: 240px;
-    overflow: auto;
-}
-.time-slider {
+.arrow {
     display: grid;
-    justify-content: space-evenly;
-    align-content: center;
-    position: absolute;
-    width: 50vw;
-    height: 5vh;
-    min-height: 40px;
-    background-color: rgba(255, 145, 0);
-    background-color: rgba(255, 145, 0, 0.7);
-    border-radius: 10px;
-    margin: 55vh 25vw;
-    cursor: pointer;
-    transform: scaleX(0);
-    font-weight: 600;
+    grid-template-columns: 15vh calc(100vw - 30vh) 15vh;
+    justify-content: center;
 }
-.progress-bar {
-    position: absolute;
-    background-color: rgb(19, 62, 255);
-    background-color: rgb(19, 62, 255, 0.7);
-    width: 0;
-    height: 5vh;
-    min-height: 40px;
-    border-radius: 10px;
-    margin: 55vh 25vw;
+.arrow-head, .arrow-tail {
+    transform: rotate(180deg);
+    width: 7.5vh;
+    height: 7.5vh;
+    object-fit: contain;
+    background-color: white;
+}
+.arrow-head {
+    padding: 0 0 0 7.5vh;
+}
+.arrow-tail {
+    padding: 0 7.5vh 0 0;
+    z-index: 1;
+}
+.arrow-body {
+    transform: rotate(180deg) scaleX(100) scaleY(1.5);
+    width: 7.5vh;
+    height: 7.5vh;
+    object-fit: contain;
     cursor: pointer;
+}
+.coin {
+    position: absolute;
+    z-index: 1; 
+    left: 15vh;
+    top: 91.5vh;
+}
+.coin img {
+    width: 4vh;
+    height: 4vh;
+}
+.marking {
+    display: grid;
+    text-align: center;
+    color: white;
+    width: fit-content;
+    position: absolute;
+    top: 87vh;
+    z-index: -1;
+    transition: color 0.2s;
+}
+.bottom-marking {
+    margin: 7vh 0 0 0;
 }
 .overlay {
     display: grid;
@@ -155,99 +192,83 @@ img {
     color: rgb(54, 54, 54);
     transition: color 0.5s;
 }
-.navigation-top {
+.close-button {
     display: grid;
-    grid-template-rows: repeat(2, auto);
-    grid-template-rows: 30px 30px;
-    justify-content: center;
+    grid-template-columns: 120px 30px 50px;
+    align-items: center;
+    text-align: center;
+    text-justify: center;
     position: absolute;
-    width: 150px;
-    margin: 12vh calc(50vw - 75px);
-}
-.navigation-bottom {
-    display: grid;
-    grid-template-rows: repeat(2, auto);
-    grid-template-rows: 30px 30px;
-    justify-content: center;
-    position: absolute;
-    width: 150px;
-    margin: 60vh calc(50vw - 75px);
-}
-#nav-top, #nav-bot, #close-button {
-    font-family: 'Aguafina Script', cursive;
-    color: rgb(175, 0, 0);
+    margin: 60vh 0 0 60vw;
+    transition: color 0.5s;
 }
 #close-button {
-    font-size: 70px;
-}
-/* .navigation-left {
-    position: absolute;
-    margin: calc(35vh - 40px) calc(25vw - 60px);
-    transform: scaleY(1.5) scaleX(0.5);
-}
-.navigation-right {
-    position: absolute;
-    margin: calc(35vh - 40px) calc(75vw + 5px);
-    transform: scaleY(1.5) scaleX(0.5);
-}
-#nav-left, #nav-right {
-    background-color: transparent;
-    border-width: 0;
-    font-size: 70px;
+    font-family: 'Aguafina Script', cursive;
     color: rgb(175, 0, 0);
+    font-size: 50px;
     cursor: pointer;
-    transition: color 0.5s;
 }
-#nav-left:hover, #nav-right:hover {
-    background-color: transparent;
-    border-width: 0;
+#button-description {
+    font-family: 'Aguafina Script', cursive;
     color: rgb(54, 54, 54);
-    transition: color 0.5s;
-} */
+    font-size: 25px;
+}
 span {
     justify-self: center;
-    font-size: 30px;
-}
-.close-button {
-    position: absolute;
-    margin: 62vh 68vw;
+    font-size: 20px;
     transition: color 0.5s;
-    cursor: pointer;
+}
+.closing {
+    position: absolute;
+    text-align: center;
+    color: white;
+    width: 100vw;
+    top: 87.5vh;
+    display: grid;
+    grid-template-rows: 6vh 1vh 6vh;
+    transition: color 1s;
 }
 .close-button:hover {
     color: rgb(54, 54, 54);
     transition: color 0.5s;
 }
-.closing {
-    text-align: center;
-    margin: -15px 0;
-    color: white;
-}
-.fly-in {
-    margin: 0;
-}
 .revealed {
-    color: rgb(54, 54, 54);
     transform: scaleX(1);
-    transition: transform 1s, color 2s, margin 2s;
+    transition: transform 1s;
+}
+.fade-in {
+    color: rgb(54, 54, 54);
+    transition: color 1s;
+}
+.highlight {
+    color: tomato;
+    transition: color 0.5s;
 }
 .hidden {
     display: none;
 }
 
 @media (max-height: 800px) {
+    body {
+        overflow-y: scroll;
+        grid-template-rows: 96px 600px 104px; 
+    }
+    header {
+        grid-template-rows: 70px 2px 22px 2px;
+    }
     .scroll-body {
+        height: 520px;
         margin: 40px 10vw;
     }
-    .progress-bar, .time-slider {
-        margin: 440px 25vw;
+    .left-scroll, .right-scroll {
+        height: 560px;
     }
     .display{
-        margin: 160px 25vw;
+        margin: 160px 0 0 25vw;
         height: 240px;
     }
     .overlay {
-        margin: 240px 25vw;
+        margin: 240px 0 0 calc(50vw - 80px);
         width: 160px; 
         height: 160px;
     }
@@ -262,18 +283,75 @@ span {
         grid-template-columns: 240px 1fr;
     }
     .navigation-top {
-        margin: 96px calc(50vw - 75px);
+        margin: 96px 0 0 calc(50vw - 75px);
     }
     .navigation-bottom {
-        margin: 480px calc(50vw - 75px);
+        margin: 480px 0 0 calc(50vw - 75px);
     }
     .close-button {
-        margin: 496px 68vw;
+        margin: 480px 0 0 60vw;
     }
-    #nav-left {
-        margin: 280px 25vw;
+    .coin {
+        left: 120px;
+        top: 732px;
     }
-    #nav-right {
-        margin: 280px 75vw;
+    .coin img {
+        width: 32px;
+        height: 32px;
+    }
+    .marking {
+        top: 700px;
+    }
+    .bottom-marking {
+        margin: 56px 0 0 0;
+    }
+    .arrow-head, .arrow-tail, .arrow-body {
+        width: 60px;
+        height: 60px;
+    }
+    .arrow-head {
+        padding: 0 0 0 60px;
+    }
+    .arrow-tail {
+        padding: 0 60px 0 0;
+    }
+    .arrow {
+        grid-template-columns: 120px calc(100vw - 240px) 120px;
+    }
+    .closing {
+        top: 702px;
+        grid-template-rows: 48px 8px 48px;
     }
 }
+
+/* @media (max-width: 1200px) {
+    .closing {
+        font-size: 20px;
+    }
+    .instruction {
+        display: none;
+    }
+    .left-scroll, .right-scroll {
+        transform: rotate(90deg);
+        left: 0;
+        margin: 0;
+    }
+    .left-open {
+        transform: rotate(90deg) translateX(-70%) translateY(-5vw);
+    }
+    .right-open {
+        transform: rotate(90deg) translateX(80%) translateY(-5vw);
+    }
+    .scroll-body {
+        transform: rotate(90deg);
+        margin: 10vh 10vw;
+        width: 100vh;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+    }
+    .display, .time-slider, .progress-bar {
+        display: none;
+    }
+} */
